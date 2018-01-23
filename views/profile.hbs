@@ -1,0 +1,415 @@
+<style>
+    .comment-container{
+        background-color: rgba(173, 171, 171, 0.527)
+    }
+    .comment{
+        overflow-wrap: break-word;
+    }
+    .username{
+        margin-left: 20%;
+        width:30%;
+        font-weight: bold;
+        color: rgba(28, 97, 88, 0.699);
+    }
+    #answerBox{
+        padding-left: 20px
+    }
+    hr{
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid rgb(87, 50, 9);
+        margin: 1em 0;
+        padding: 0; 
+    }
+    .answers>div{
+        color: white;
+        background-color: black;
+    }
+    .container{
+        margin-top: 7%;
+    }
+    .tag-block{
+        margin: 2%;
+    }
+    .tag{
+        border-radius: 15%;
+        background-color: rgb(97, 77, 51);
+        color: white;
+        padding-left: 1%;
+        padding-right: 1%;
+        margin-right:1%;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        
+        {{!-- PROFILE DETAILS --}}
+        <div class="col-md-3">
+            <img src="{{user2.currentDp.src}}" alt="pic" width="200">
+            <hr>
+            <h6><label for="name">name : </label> {{user2.firstname}} {{user2.lastname}}</h6>
+            <h6><label for="username">username : </label> {{user2.username}}</h6>
+        </div>
+
+        {{!-- QUES/ANS COLUMN--}}
+        <div class="col-md-9">
+            
+            {{!-- ASK QUESTION --}}
+            <form action="/submit/question" method="post" id="askQuestion">
+                <textarea name="question" cols="100" rows="3" placeholder="Ask your question"></textarea>
+                <br>
+                <input type="text" name="tags" placeholder="tags" multiple>
+                <br>
+                <button>submit</button>
+            </form>
+            <hr>
+
+            {{#each questions}}
+
+                <div class="container">
+
+                    {{!-- QUESTIONS --}}
+                    <div class="row">
+                        <div class="col-md-1" id="quesLikeBox{{@index}}">
+                            <div>Likes</div>
+                            <div id="quesLike{{@index}}">{{this.likes}}</div>
+                        </div>
+                        <div class="col-md-10">{{this.question}}</div>
+                        <div class="col-md-1" id="delete{{@index}}"><a href="javascript:AlertIt{{@index}}();">Del</a></div>
+                    </div>
+                    
+                    
+                    <div id="addComment{{@index}}">Add Comment</div>
+                    
+                    {{!-- COMMENT FORM --}}
+                    <div class="container" id="comment-form{{@index}}">
+                        <form>
+                            <input type="text" size="80%" id="comment-add{{@index}}">
+                            <button id="comment-form-btn{{@index}}">submit</button>
+                        </form>
+                    </div>
+
+                    {{!-- COMMENTS LISTED--}}
+                    <div class="container comment-container">
+                        {{#each this.comments}}
+                            <div class="row ">
+                                <div class="col-md-3 username" id="comment-username{{@../index}}-{{@index}}"></div>
+                                <div class="col-md-3 comment">{{this.comment}}</div>
+                                <div class="col-md-2" id="comment-likes{{@../index}}-{{@index}}">{{this.likes}}</div>
+                                <div class="col-md-1" id="delete-com{{@../index}}-{{@index}}"><a href="/submit/delete/ques-comment/{{../this._id}}/{{this._id}}/{{../../user2.username}}">del</a></div>
+                            </div>
+                        {{/each}}
+                    </div>
+
+                    {{!-- TAGS --}}
+                    <div class="row tag-block">
+                        <div class="col-md-1">Tags:</div>
+                        {{#each this.tags}}
+                            <p class="tag" onclick="javascript:searchTag('{{this}}')">{{this}}</p>
+                        {{/each}}
+                    </div>
+                </div>
+                
+                {{!-- WRITE ANSWERS  ----AND---   ITS COUNT--}}
+                <div id="answerBox">total answers: {{this.answers.length}}
+                    <div id="writeAns{{@index}}">write an answer</div>
+                    <form action="/submit/answer/{{this.username}}/{{this._id}}" method="post" id="ans{{@index}}">
+                        <textarea name="answer" cols="75" rows="5"></textarea>
+                        <div id="cancel{{@index}}">cancel</div>
+                        <br>
+                        <button id="btn">submit</button>
+                    </form>
+                </div>
+                
+                {{#if this.answers.length}}
+
+                    <div id="showAns{{@index}}">Show Answers</div>
+                    
+                    {{!-- ANSWERS BLOCK --}}
+                    <div class="container" id="listAns{{@index}}" >
+
+                        {{#each this.answers}}
+                            <hr width="70%" color="WHITE">
+                            <h4>{{this.username}}</h4>
+
+                            {{!-- ANSWER --}}
+                            <div class="row answers">
+                                <div class="col-md-1">
+                                    <div>Likes</div>
+                                    <div id="ans-likes{{@../index}}-{{@index}}">{{this.likes}}</div>
+                                </div>
+                                <div class="col-md-10">{{this.answer}}</div>
+                                <div class="col-md-1" id="delete-ans{{@../index}}-{{@index}}"><a href="javascript:AlertIt{{@../index}}_{{@index}}();">Del</a></div>
+                            </div>
+                        {{/each}}
+                    </div>    
+                {{/if}}
+                <hr>
+            {{/each}}
+        </div>
+    </div>
+        
+</div>
+
+
+
+<script>
+
+    //if question is liked by the user change the attribute of the likes
+    {{#each questions}}
+        $("#listAns"+{{@index}}).css({'padding-left':'20px'});
+        $("#quesLikeBox"+{{@index}}).css({'background-color':'rgb(182, 176, 176)'})
+        $.ajax({
+            url:"/submit/ifquesliked",
+            method:"POST",
+            data:{ "quesId" : "{{this._id}}" },
+        }).done(function(result){
+            if(result.liked == 1){
+                $("#quesLike"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+            }
+        });
+    {{/each}}
+
+    //increments the likes of questions only if not liked by the user already
+    {{#each questions}}
+        $("#quesLike"+{{@index}}).click(function(){
+            $.ajax({
+                url:"/submit/queslikes/{{this._id}}",
+                method:"POST",
+                data:{"wassup":"nothing much"}
+            })
+            .done(function(msg){
+                console.log(msg);
+                if(msg.inc==0){
+                    {{!-- alert("now you have disliked the question"); --}}
+                    let value=$("#quesLike"+{{@index}}).text();
+                    value=Number(value)-1;
+                    $("#quesLike"+{{@index}}).html(value);
+                    $("#quesLike"+{{@index}}).css({'color':'black','font-size':'95.23%','font-weight':'normal'});
+                }
+                else{
+                    let value=$("#quesLike"+{{@index}}).text();
+                    value=Number(value)+1;
+                    $("#quesLike"+{{@index}}).html(value);
+                    $("#quesLike"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+                }
+            })
+            .fail(function(){
+                alert("it failed");
+            });
+        });
+    {{/each}}
+
+    //shows the ask question form only if you are on your profile page
+    if( "{{user.username}}" == "{{user2.username}}"){
+        $("#askQuestion").show();
+    }
+    else{
+        $("#askQuestion").hide();
+    }
+
+    //open answer answer form and show answers on click 
+    for(let i=0;i<{{questions.length}};i++){
+        $("#ans"+i).hide();
+        $("#listAns"+i).hide();
+    }
+    for(let i=0;i<{{questions.length}};i++){
+        $("#showAns"+i).click(function(){
+            $("#listAns"+i).toggle();
+            var str=$("#showAns"+i).text();
+            if(str=="Show Answers")
+                $("#showAns"+i).html("Hide Answers");
+            else
+                $("#showAns"+i).html("Show Answers");
+        });
+        $("#writeAns"+i).click(function(){
+            $("#ans"+i).show();
+        });
+        $("#cancel"+i).click(function(){
+            $("#ans"+i).hide();
+        });
+        
+        //change to pointer on hover
+        $("#writeAns"+i).hover(function(){
+            $(this).css({'cursor':'pointer'});
+        });
+        $("#cancel"+i).hover(function(){
+            $(this).css({'cursor':'pointer'});
+        });
+        $("#showAns"+i).hover(function(){
+            $(this).css({'cursor':'pointer'});
+        });
+        $("#addComment"+i).hover(function(){
+            $(this).css({'cursor':'pointer'});
+        });
+        $("#quesLike"+i).hover(function(){
+            $(this).css({'cursor':'pointer'});
+        });
+
+        //Add-Comment CSS
+        $("#addComment"+i).css({'text-align': 'right', 'margin-left' : '75%', 'border-top' : 'solid thin #481'});
+
+    }
+
+    
+    {{#each questions}}
+
+        function AlertIt{{@index}}() {
+            var answer = confirm ("Please click on OK to continue.")
+            if (answer)
+            window.location="/submit/delete/ques/{{this._id}}/{{../user.username}}";
+        }
+        function searchTag(tag){
+            alert('we are searching tag');
+            window.location="/search/tags/"+tag;
+        }
+
+        //Hide Del button of questions that user didn't post
+        if("{{this.username}}" != "{{../user.username}}" ){
+            $("#delete"+{{@index}}).hide();
+        }
+
+        //Hide comment-form initially
+        $("#comment-form"+{{@index}}).hide();
+
+        //Click to write a comment
+        $("#addComment"+{{@index}}).click(function(){
+            $("#comment-form"+{{@index}}).toggle();
+        });
+
+        //SUBMIT COMMENT
+        $("#comment-form-btn"+{{@index}}).click(function(){
+            let com=$("#comment-add"+{{@index}}).val();
+            {{!-- console.log(com); --}}
+            $.ajax({
+                url:"/submit/comment",
+                method: "POST",
+                data:{"quesId":"{{this._id}}","comment":com}
+            })
+            .done(function(msg){
+                console.log(msg);
+            });
+        });
+
+        //FOR QUES COMMENTS
+        {{#each this.comments}}
+            //Hide Del button of ques-comments that user didn't post
+            if("{{this.email}}" != "{{../../user.email}}" ){
+                $("#delete-com"+{{@../index}}+"-"+{{@index}}).hide();
+            }
+            
+            //cursor to pointer on over ques-comments-likes
+            $("#comment-likes"+{{@../index}}+"-"+{{@index}}).hover(function(){
+                $(this).css({'cursor':'pointer'});
+            });
+
+            //if ques-comment liked by user then change css
+            $.ajax({
+                url:"/submit/ifQuesCommentliked",
+                method:"post",
+                data:{"quesId":"{{../this._id}}","commentIndex":"{{@index}}" },
+            }).done(function(result){
+                if(result.liked == 1){
+                   $("#comment-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+                }
+            });
+            
+            //put username instead of email for comments
+            $.ajax({
+                url:"/submit/getusernamefromemail",
+                method:"post",
+                data:{email: "{{this.email}}" },
+            }).done(function(result){
+                if(result.username=="not found")
+                $("#comment-username"+{{@../index}}+"-"+{{@index}}).html("{{this.email}}");
+                else
+                $("#comment-username"+{{@../index}}+"-"+{{@index}}).html(result.username);
+
+            });
+
+            //on click increase likes of comment
+            $("#comment-likes"+{{@../index}}+"-"+{{@index}}).click(function(){
+                $.ajax({
+                    url:"/submit/quesCommentLikes",
+                    method:"post",
+                    data:{"quesId":"{{../this._id}}","commentIndex":"{{@index}}" },
+                }).done(function(result){
+                    if(result.inc==0){
+                        {{!-- alert("you have already liked the comment"); --}}
+                        let value=$("#comment-likes"+{{@../index}}+"-"+{{@index}}).text();
+                        value=Number(value)-1;
+                        $("#comment-likes"+{{@../index}}+"-"+{{@index}}).html(value);
+                        $("#comment-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'black','font-size':'95.23%','font-weight':'normal'});
+                    }
+                    else{
+                        let value=$("#comment-likes"+{{@../index}}+"-"+{{@index}}).text();
+                        value=Number(value)+1;
+                        $("#comment-likes"+{{@../index}}+"-"+{{@index}}).html(value);
+                        $("#comment-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+                    }
+                })
+            });
+            
+        {{/each}}
+
+        //FOR ALL THE ANSWERS OF A QUESTION
+        {{#each this.answers}}
+
+            function AlertIt{{@../index}}_{{@index}}() {
+                var answer = confirm ("Please click on OK to continue.")
+                if (answer)
+                window.location="/submit/delete/ans/{{../this._id}}/{{this._id}}/{{../../user.username}}";
+            }
+
+            //Hide Del button of ans that user didn't post
+            if("{{this.username}}" != "{{../../user.username}}" ){
+                $("#delete-ans"+{{@../index}}+"-"+{{@index}}).hide();
+            }
+
+            //cursor to pointer on over ques-comments-likes
+            $("#ans-likes"+{{@../index}}+"-"+{{@index}}).hover(function(){
+                $(this).css({'cursor':'pointer'});
+            });
+
+            //if ans is liked by user then change css
+            $.ajax({
+                url:"/submit/ifAnsliked",
+                method:"post",
+                data:{"quesId":"{{../this._id}}","ansIndex":"{{@index}}" },
+            }).done(function(result){
+                if(result.liked == 1){
+                   $("#ans-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+                }
+            });
+
+            //on click increase likes of answer
+            $("#ans-likes"+{{@../index}}+"-"+{{@index}}).click(function(){
+                $.ajax({
+                    url:"/submit/ansLikes",
+                    method:"post",
+                    data:{"quesId":"{{../this._id}}","ansIndex":"{{@index}}" },
+                }).done(function(result){
+                    if(result.inc==0){
+                        //alert("you have already liked the answer");
+                        let value=$("#ans-likes"+{{@../index}}+"-"+{{@index}}).text();
+                        value=Number(value)-1;
+                        $("#ans-likes"+{{@../index}}+"-"+{{@index}}).html(value);
+                        $("#ans-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'white','font-size':'95.23%','font-weight':'normal'});
+                    }
+                    else{
+                        let value=$("#ans-likes"+{{@../index}}+"-"+{{@index}}).text();
+                        value=Number(value)+1;
+                        $("#ans-likes"+{{@../index}}+"-"+{{@index}}).html(value);
+                        $("#ans-likes"+{{@../index}}+"-"+{{@index}}).css({'color':'blue','font-size':'105%','font-weight':'bold'});
+                    }
+                }).fail(function(err){
+                    alert("error");
+                })
+            });
+        {{/each}}
+    {{/each}}
+</script>
+

@@ -1,0 +1,22 @@
+<style>
+    .container{
+        margin-top: 7%;
+        z-index: -1;
+    }
+</style>
+<div class="container">
+    <h1>Dashboard</h1>
+    <hr>
+    <div class="row">
+        <div class="co-md-2"></div>
+        <div class="col-md-8">
+            {{#each questions}}
+            <h4>{{this.question}}</h3>
+            <h6>{{this.likes}}--{{this.updatedAt}}</h5>
+            <p>{{username}}--{{likesToTime}}</p>
+            <hr>
+            {{/each}}
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>

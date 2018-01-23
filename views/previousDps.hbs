@@ -1,0 +1,13 @@
+ <div class="container"> 
+    <div class="row">
+        {{#each user.prevDps}}
+        <div class="col-md-4">
+            <img src="{{this.src}}" alt="{{@index}}" id={{this._id}} width="300" class="thumbnail">
+            <!--span>{{this._id}}</span-->
+            <br>
+            <a href="/settings/profile/deletePrevDP/{{this._id}}/{{@index}}">delete {{@index}}</a>
+            <a href="/settings/profile/currentDP/{{@index}}">change profile {{@index}}</a>
+        </div>
+        {{/each}}
+    </div>
+</div>

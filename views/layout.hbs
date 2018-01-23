@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!--link rel="shortcut icon" href="/images/favicon.ico" -->
+    <link rel="shortcut icon" href="/images/concentric-circles.png" >
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.3/css/materialize.min.css"> --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+      .header{
+        margin-bottom: 20px;
+      }
+      body{
+        padding: 0px;
+      }
+      .navbar{
+        background-color: #333;
+        padding: 0px;
+        width: 100%;
+        position: fixed;
+        z-index: 10;
+        top: 0;
+      }
+      .navbar a{
+        color: white;
+        padding: 10px;
+      }
+      .dropdown{
+        position: relative;
+        z-index: 10;
+        padding: 0px;
+      }
+      .dropdown .dropbtn {    
+        margin: 0px;
+        padding: 0px;
+        outline: none;
+        color: white;
+        background-color: inherit;
+        cursor: pointer;
+      }
+      .navbar a:hover, .dropdown:hover {
+        background-color: red;
+      }
+
+      .dropdown-content{
+        display: none;
+        position: absolute;
+        top: 45px;
+        left: 0px;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        width: 100%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 100;
+      }
+      .dropdown-content a{
+        display: block;
+        color: black;
+      }
+
+      .dropdown:hover .dropdown-content{
+        display: block;
+      }
+      .dropdown-content a:hover{
+        background-color: #ddd;
+      }
+      .col-1{
+        float:left;
+        width: 8.33%;
+        padding: 10px;
+      }
+      .col-2{
+        float: left;
+        width: 16.66%;
+        padding: 10px;
+      }
+      .col-6{
+        float:left;
+        width: 50%;
+        padding: 10px;
+      }
+      .col-8{
+        float:left;
+        width: 66.66%;
+        padding: 10px;
+      }
+      .col-10{
+        float:left;
+        width: 83.33%;
+        padding: 10px;
+      }
+      .search{
+        border-radius: 6px;
+        border: 0px;
+        padding-left: 3%;
+        width: 38%;
+        margin-left: 10%;
+        font-size: 95%;
+      }
+      .type{
+        border-radius: 6px;
+        border: 0px;
+        padding-left: 3%;
+        width: 20%;
+        margin-left: 10%;
+        font-size: 95%;
+      }
+      .ui-menu{
+        background: #333;
+        list-style-type: none;
+        position: absolute;
+        z-index: 10;
+        max-width: 30%;
+        word-wrap: break-word;
+        overflow: auto;
+        padding: 0px;
+      }
+      .ui-menu-item-wrapper{
+        color: #ddd;
+        border-top: 1px solid rgb(87, 78, 78);
+        padding: 7px;
+      }
+      .ui-state-active{
+        cursor: pointer;
+        background-color: #ddd;
+        color: #333;
+      }
+      .ui-helper-hidden-accessible{
+        display: none;
+      }
+    </style>
+
+  </head>
+  <body>
+    {{!-- if logged in --}}
+    {{#if loggedin}}
+    <div class="header">
+      <div class="navbar">
+        
+        {{!-- tab1 --}}
+        <a href="/" class="col-2">dashboard</a>
+        
+        <div class="col-6">
+          <form action="/search" method="get">
+            {{!-- search tab --}}
+            <input type="text" name="search" class="search" placeholder="Search">
+            {{!-- <input type="text" name="type" class="type" placeholder="Type"> --}}
+            <select name="type" class="type">
+              <option value="users" selected="selected">users</option>
+              <option value="questions">questions</option>
+              <option value="tags">tags</option>
+              <option value="email">email</option>
+            </select>
+          </form>
+        </div>
+        
+        {{!-- dropdown tab for profile and update --}}
+        <div class="dropdown col-2">
+          <div class="text-right dropbtn">{{user.username}}</div>
+          <div class="dropdown-content">
+            <a href="/{{user.username}}">profile</a>
+            <a href="/settings/profile">update</a>
+          </div>
+        </div>
+
+        {{!-- logout tab --}}
+        <a href="/logout" class="col-2 text-right" id="logout">log out</a>
+      </div>
+    </div>
+
+    {{!-- not logged in --}}
+    {{else}}
+    <div class="header">
+      <div class="navbar">
+        {{!-- tab-1 --}}
+        <a href="/" class="col-2">Home page</a>
+        
+        {{!-- blank --}}
+        <div class="col-6"></div>
+
+        {{!-- signin --}}
+        <a href="/signin" class="col-2 text-right">sign in</a>
+        
+        {{!-- signup --}}
+        <a href="/signup" class="col-2 text-right">sign up</a>
+      </div>
+    </div>
+    {{/if}}
+
+    {{{body}}}
+  </body>
+
+  <script>
+
+      var quess=[],users=[],tags=[],email=[];
+
+      //get the list of users and questions
+      $.ajax({
+        url:"/search",
+        method:"post",
+      }).done(function(result){
+        users=result.users;
+        quess=result.ques;
+        tags=result.tags;
+        email=result.emails;
+        let value=$('.type').val();
+        if(value=="users")
+        {
+          console.log(1);
+          $('.search').autocomplete({
+            source: function(req,res){
+              let results = $.ui.autocomplete.filter(users, req.term);
+              res(results.slice(0,10));
+            },
+            select: function( event, ui ) { 
+              window.location.href = "/"+ui.item.value;
+            }
+          });
+        }
+      });
+      console.log(2);
+
+      //on change of type autocomplete users/question
+      $('.type').change(function(){
+        let value=$('.type').val();
+        if(value=="users")
+        {
+          console.log('users-1');
+          $('.search').autocomplete({
+            source: function(req,res){
+              let results = $.ui.autocomplete.filter(users, req.term);
+              res(results.slice(0,10));
+            },
+            select: function( event, ui ) { 
+              window.location.href = "/"+ui.item.value;
+            }
+          });
+        }
+        else if(value=="questions")
+        {
+          console.log('quess-2');
+          $('.search').autocomplete({
+            source: function(req,res){
+              let results = $.ui.autocomplete.filter(quess, req.term);
+              res(results.slice(0,7));
+            },
+            select: function( event, ui ) { 
+              window.location.href = "/search/question?ques="+ui.item.value;
+            }
+          });
+        }
+        else if(value=="tags"){
+          console.log('tags-3');
+          //console.log(tags);
+          $('.search').autocomplete({
+            source: function(req,res){
+              let results = $.ui.autocomplete.filter(tags, req.term);
+              res(results.slice(0,7));
+            },
+            select: function( event, ui ) { 
+              window.location.href = "/search?search="+ui.item.value+"&type=tags";
+            }
+          });
+        }
+        else{
+          console.log('email-4');
+          $('.search').autocomplete({
+            source: function(req,res){
+              let results = $.ui.autocomplete.filter(email, req.term);
+              res(results.slice(0,10));
+            },
+            select: function( event, ui ) {
+              $.ajax({
+                url:'/search/email',
+                method:"post",
+                data:{"email":ui.item.value}
+              }).done(function(result){
+                window.location.href = "/"+result.username;
+              });
+            }
+          });
+        }
+      });
+  </script>
+
+</html>

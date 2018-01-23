@@ -1,0 +1,36 @@
+<style>
+    .quesBlock{
+        background-color: #ddd;
+    }
+    .ansBlock{
+        background-color: #ddd;
+    }
+    .left-margin{
+        float: left;
+    }
+    .main-block{
+        overflow: hidden;
+    }
+</style>
+
+<div>
+    <span class="col-2">jsd</div>
+    <div class="col-6">
+        <div class="quesBlock">
+            <h4>{{ques.question}}</h4>
+            <h6>by:{{ques.username}}</h6>
+            <h6 id="date">{{ques.createdAt}}</h6>
+            <h6 id="time">{{ques.updatedAt}}</h6>    
+        </div>
+        <h5>Answers</h5>
+        {{#each ques.answers}}
+            <div class="ansBlock">
+                <h6>{{this.username}}</h6>
+                <h6 id="date">{{this.createdAt}}</h6>
+                <h6 id="time">{{this.updatedAt}}</h6>
+                <hr>    
+                <h6>{{this.answer}}</h6>
+            </div>
+        {{/each}}
+    </div>
+</div>

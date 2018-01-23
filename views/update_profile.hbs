@@ -1,0 +1,68 @@
+<style>
+    h1{
+        padding-bottom: 20px;
+    }
+</style>
+<div class="container">
+    <h1>Profile</h1>
+    <div class="row">
+        <div class="col-md-6">
+            {{{msg}}}
+            <form  action="/settings/profile" method="POST">
+                <div>
+                    <h3>firstname</h3>
+                    <input type="text" name="firstname" placeholder="firstname" value="{{user.firstname}}">
+                </div>
+                <div>
+                    <h3>lastname</h3>
+                    <input type="text" name="lastname" placeholder="lastname" value="{{user.lastname}}">
+                </div>
+                <div>
+                    <h3>username</h3>
+                    <input type="text" name="username" placeholder="username" value="{{user.username}}">
+                </div>
+                <div>
+                    <h3>college</h3>
+                    <input type="text" name="college" placeholder="college" value="{{user.college}}">
+                </div>
+                <div>
+                    <h3>date of birth</h3>
+                    <input type="date" name="dob" value="{{user.dob}}">
+                </div>
+                <div>
+                    <button>register</button>
+                </div>
+            </form>
+        </div>
+        <!-- profile image update -->
+        <div class="col-md-6">
+            <form action='/settings/profile/image' method="post" enctype="multipart/form-data">
+                <input type='file' onchange="preview()" name="newDp" accept="image/x-png,image/gif,image/jpeg" />
+                <br>
+                <h4>or</h4>
+                <a href="/settings/profile/previousDps">Choose from prev Profile Pictures</a>
+                <br>
+                <img src="{{user.currentDp.src}}" alt="pic" width="200" id="imageDisplay">
+                <br>
+                <button>upload</button>
+            </form>
+        </div>
+    </div>
+    <div>
+    Delete Account
+    <a href="/settings/delete">Click Here</a>
+    </div>
+</div>
+<script>
+    function preview() {
+        var reader = new FileReader();
+        var file=document.querySelector('input[type=file]').files[0];
+        reader.onload = function (e) {
+            // get loaded data and render thumbnail.
+            document.getElementById("imageDisplay").src = e.target.result;
+            console.log(e.target.result);
+        };
+        // read the image file as a data URL.
+        reader.readAsDataURL(file);
+    };
+</script>
