@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "client": "cd react_client && npm start",
+    "server": "nodemon ./bin/www",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
   },
   "dependencies": {
     "async": "^2.6.0",
     "body-parser": "~1.15.2",
     "client-sessions": "^0.8.0",
+    "concurrently": "^3.5.1",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
