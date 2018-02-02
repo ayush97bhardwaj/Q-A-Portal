@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Route, Router } from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
 
-class AppBasic extends Component {
+class App extends Component {
   render() {
     return (
       <div className="App">
@@ -18,12 +17,4 @@ class AppBasic extends Component {
     );
   }
 }
-
-const App=()=>(
-  <Router>
-    <div>
-      <Route path="/home2" component={AppBasic}/>
-    </div>
-  </Router>
-)
-export default AppBasic;
+export default App;
