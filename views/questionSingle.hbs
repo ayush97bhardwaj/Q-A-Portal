@@ -1,12 +1,24 @@
 <style>
     .quesBlock{
-        margin-top: 20px;
-        padding: 10px;
-        box-shadow: 0px 3px 3px;
+        margin: 20px;
+        margin-top: 40px;
+        padding: 15px;
+        box-shadow: 0 4px 8px 4px rgba(0,0,0,0.2);
         border-radius: 5px;
+        transition: 0.3s;
+    }
+    .quesBlock:hover{
+        box-shadow: 0 6px 12px 4px rgba(0,0,0,0.2);
     }
     .ansBlock{
-        background-color: #ddd;
+        padding: 15px;
+        margin: 20px;
+        box-shadow: 0 4px 8px 4px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .ansBlock:hover{
+        box-shadow: 0 6px 12px 4px rgba(0,0,0,0.2);
     }
     .left-margin{
         float: left;
@@ -17,13 +29,13 @@
 </style>
 
 <div>
-    <span class="col-2">jsd</div>
-    <div class="col-6">
+    <span class="col-2"></div>
+    <div class="col-8">
         <div class="quesBlock">
-            <h4>{{ques.question}}</h4>
-            <h6>by:{{ques.username}}</h6>
-            <h6 id="date">{{ques.createdAt}}</h6>
-            <h6 id="time">{{ques.updatedAt}}</h6>    
+            <h4 class="display-4" style="font-size:30px;font-weight:bold">{{ques.question}}</h4>
+            <h6 style="font-size:15px">by:{{ques.username}}</h6>
+            <h6 id="date" style="font-size:15px;font-weight:normal">{{ques.createdAt}}</h6>
+            <h6 id="time" style="font-size:15px;font-weight:normal">{{ques.updatedAt}}</h6>    
         </div>
         <h5>Answers</h5>
         {{#each ques.answers}}
