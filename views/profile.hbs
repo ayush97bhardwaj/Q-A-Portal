@@ -77,7 +77,7 @@
                             <div>Likes</div>
                             <div id="quesLike{{@index}}">{{this.likes}}</div>
                         </div>
-                        <div class="col-md-10">{{this.question}}</div>
+                        <div class="col-md-10" id="ques_{{@index}}">{{this.question}}</div>
                         <div class="col-md-1" id="delete{{@index}}"><a href="javascript:AlertIt{{@index}}();">Del</a></div>
                     </div>
                     
@@ -141,7 +141,7 @@
                                     <div>Likes</div>
                                     <div id="ans-likes{{@../index}}-{{@index}}">{{this.likes}}</div>
                                 </div>
-                                <div class="col-md-10">{{this.answer}}</div>
+                                <div class="col-md-10">{{breaklines this.answer}}</div>
                                 <div class="col-md-1" id="delete-ans{{@../index}}-{{@index}}"><a href="javascript:AlertIt{{@../index}}_{{@index}}();">Del</a></div>
                             </div>
                         {{/each}}
@@ -294,6 +294,9 @@
             });
         });
 
+        var askedQues='{{this.question}}';
+        console.log(askedQues);
+
         //FOR QUES COMMENTS
         {{#each this.comments}}
             //Hide Del button of ques-comments that user didn't post
@@ -407,8 +410,9 @@
                     }
                 }).fail(function(err){
                     alert("error");
-                })
+                });
             });
+
         {{/each}}
     {{/each}}
 </script>

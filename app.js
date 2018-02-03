@@ -12,6 +12,8 @@ var session = require('client-sessions');
 var multer=require('multer');
 var async=require('async');
 var fs=require('fs');
+var hbs=require('hbs');
+
 var GOOGLE_CLIENT_ID      = "864876813261-g675ot3nlrngigqq4utunqh756for324.apps.googleusercontent.com"
 , GOOGLE_CLIENT_SECRET  = "eczvDNe94eztTBzxVJdMB1VX";
 
@@ -48,8 +50,14 @@ var search=require('./routes/search.js');
 var app = express();
 
 // view engine setup
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+hbs.registerHelper('breaklines', function(text) {
+  text = hbs.Utils.escapeExpression(text);
+  text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+  return new hbs.SafeString(text);
+});
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
